@@ -1,0 +1,370 @@
+type: edu
+custom_name: stage2
+files:
+- name: src/banking/Main.java
+  visible: true
+  text: "package banking;\n\nimport java.util.Scanner;\nimport java.util.Random;\n\
+    import java.util.HashMap;\n\npublic class Main {\n    private String PIN = null;\n\
+    \    private final String BIN  = \"400000\"; //Bank Identifier Number\n    private\
+    \ String MII = String.valueOf(BIN.charAt(0)); //BIN/100000; //Major Industry Identifier\n\
+    \    private String AI = null; // Account Identifier\n    private String checksumValue\
+    \ = \"5\";  //check digit or checksum\n    private HashMap<String,String>CustomerAccounts\
+    \ = new HashMap<>();\n    private String card = null;\n    private double balance\
+    \ = 0;\n    Scanner sc = new Scanner(System.in);\n    \n    public Main(){\n \
+    \       card = \"\";\n        PIN = \"\";\n        AI = \"\";\n    }\n    public\
+    \ double getBalance(){\n        return balance;   \n    }\n    public void setBalance(double\
+    \ balance){\n        this.balance = balance;\n    }\n    public String getPIN(){\n\
+    \        return PIN;   \n    }\n    public void setPIN(String PIN){\n        this.PIN\
+    \ = PIN;\n    }\n    public String getCardNum(){\n        return card;   \n  \
+    \  }\n    public void setCardNum(String card){\n        this.card = card;\n  \
+    \  }\n    \n    public String getAccountIdentifier(){\n        return AI;   \n\
+    \    }\n    public void setAccountIdentifier(String AI){\n        this.AI = AI;\n\
+    \    }\n    \n    public boolean checkLength(String cardnum, int lengthValue){\n\
+    \        return cardnum.toCharArray().length == lengthValue ;\n    }\n    \n \
+    \   public String generateCardNumber() {\n        boolean goodLength = false;\n\
+    \        String account = String.valueOf(generateNum(0,999_999_999));\n      \
+    \  String cardNum = null;\n        while (!checkLength(account, 9)) {\n      \
+    \      account = \"0\"+ account.trim();\n        }\n        cardNum = BIN.trim()\
+    \ + account.trim() + checksumValue.trim();\n        while (!checkLength(cardNum,\
+    \ 16)) {\n           cardNum = generateCardNumber ();\n        }   \n        return\
+    \ cardNum != null ? cardNum: \"0\";\n    }\n    public String getMIIString (int\
+    \ MII){\n        String IndustryIdentifier =\"\";\n        switch(MII){\n    \
+    \        /*1 and 2 are issued by airlines\n            3 is issued by travel and\
+    \ entertainment\n            4 and 5 are issued by banking and financial institutions\n\
+    \            6 is issued by merchandising and banking\n            7 is issued\
+    \ by petroleum companies\n            8 is issued by telecommunications companies\n\
+    \            9 is issued by national assignment*/\n            case 1:\n     \
+    \           IndustryIdentifier = \"airlines\";\n            break;\n         \
+    \   case 2:\n                IndustryIdentifier = \"airlines\";\n            break;\n\
+    \            case 3:\n                IndustryIdentifier = \"travel and entertainment\"\
+    ;\n            break;\n            case 4:\n                IndustryIdentifier\
+    \ = \"Credit Card\";\n            break;\n            case 5:\n              \
+    \  IndustryIdentifier = \"banking and financial institutions\";\n            break;\n\
+    \            case 6:\n                IndustryIdentifier = \"merchandising and\
+    \ banking\";\n            break;\n            case 7:\n                IndustryIdentifier\
+    \ = \"petroleum companies\";\n            break;\n            case 8:\n      \
+    \          IndustryIdentifier = \"telecommunications companies\";\n          \
+    \  break;\n            case 9:\n                IndustryIdentifier = \"national\
+    \ assignment\";\n            break;\n        }\n        return IndustryIdentifier;\n\
+    \        \n    }\n   // @Range(9999)\n    public int generateNum(int min, int\
+    \ max){\n        Random num = new Random();\n        return num.nextInt(max -\
+    \ min + 1) + min;\n        //PIN = pin.nextInt(10000);\n    }\n    public void\
+    \ createAccount(){\n        String  card = generateCardNumber().trim();\n    \
+    \    PIN = String.valueOf(generateNum(0000,9999));\n        while (!checkLength(PIN,\
+    \ 4)) {\n            PIN = \"0\"+ PIN;\n        }\n        System.out.println(\"\
+    Your card has been created\");\n        System.out.printf(\"Your card number:\\\
+    n%s%nYour card PIN:\\n%s\\n\",card,PIN);\n        CustomerAccounts.put(card,PIN);\n\
+    \    }\n    \n    public void start(){\n        boolean exit = false;\n      \
+    \  boolean match = exit;\n        int menu = 0;\n        int askAns = 0;\n   \
+    \     do{\n            askQuestions();\n            askAns = sc.nextInt();\n \
+    \           switch(askAns){\n                case 1:\n                    createAccount();\n\
+    \                break;\n                case 2:\n                    System.out.println(\"\
+    Enter your card number:\");\n                    String card = sc.next();\n  \
+    \                  System.out.println(\"Enter your PIN:\");\n                \
+    \    int pin = sc.nextInt(); \n                    match = loginDetailsCheck(card.trim(),\
+    \ String.valueOf(pin).trim());\n                    if(!match){\n            \
+    \            System.out.println(\"Wrong card number or PIN!\");\n            \
+    \            start();\n                    }else{\n                        System.out.println(\"\
+    You have successfully logged in!\");\n                        balanceMenu();\n\
+    \                        menu = sc.nextInt();\n                        switch(menu){\n\
+    \                            case 0:\n                            break;\n   \
+    \                         case 1:\n                                System.out.printf(\"\
+    Balance: %d%n\",(int)getBalance());\n                            break;\n    \
+    \                        case 2:\n                                System.out.println(\"\
+    You have successfully logged out!\");\n                            break;\n  \
+    \                      }\n                    }\n\n                break;\n  \
+    \              case 0:\n                    exit = true;\n                break;\n\
+    \            }\n        }while(!exit);\n        System.out.println(\"Bye\");\n\
+    \    }\n    public boolean loginDetailsCheck(String card, String pin){\n     \
+    \   if(CustomerAccounts.containsKey(card)){\n            return pin.equals(CustomerAccounts.get(card));\n\
+    \        }\n        return false;\n    }\n    public void balanceMenu() {\n  \
+    \      System.out.println(\"1. Balance\\n2. Log out\\n0. Exit\");\n    }\n   \
+    \ public void askQuestions(){\n        System.out.println(\"1. Create an account\\\
+    n2. Log into account\\n0. Exit\");\n    }\n    //--------------------------------------Run\
+    \ Program--------------------------------------------\n    public static void\
+    \ main(String[] args) {\n        \n        Main mUser = new Main();\n        mUser.start();\n\
+    \        \n      //  System.out.println(\"Hello, world!\");\n    }\n    //---------------------------------------------------------------------------------------------\n\
+    }"
+  learner_created: false
+- name: test/SimpleBankSystemTest.java
+  visible: false
+  text: |-
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testing.TestedProgram;
+    import org.hyperskill.hstest.dynamic.DynamicTest;
+
+    import java.util.Random;
+    import java.util.regex.Matcher;
+    import java.util.regex.Pattern;
+
+    public class SimpleBankSystemTest extends StageTest<String> {
+
+        private static final Pattern cardNumberPattern = Pattern.compile("^400000\\d{10}$", Pattern.MULTILINE);
+        private static final Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+
+        @DynamicTest
+        CheckResult test1_checkCardCredentials() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+
+            if (!cardNumberMatcher.find()) {
+                return CheckResult.wrong("You are printing the card number " +
+                    "incorrectly. The card number should look like in the example: " +
+                    "400000DDDDDDDDDD, where D is a digit.");
+            }
+
+            Matcher pinMatcher = pinPattern.matcher(output);
+
+            if (!pinMatcher.find()) {
+                return CheckResult.wrong("You are printing the card PIN " +
+                    "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                    "a digit.");
+            }
+
+            String correctCardNumber = cardNumberMatcher.group();
+
+            output = program.execute("1");
+            cardNumberMatcher = cardNumberPattern.matcher(output);
+
+            if (!cardNumberMatcher.find()) {
+                return CheckResult.wrong("You are printing the card number " +
+                    "incorrectly. The card number should look like in the example: " +
+                    "400000DDDDDDDDDD, where D is a digit.");
+            }
+
+            pinMatcher = pinPattern.matcher(output);
+
+            if (!pinMatcher.find()) {
+                return CheckResult.wrong("You are printing the card PIN " +
+                    "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                    "a digit.");
+            }
+
+            String anotherCardNumber = cardNumberMatcher.group();
+
+            if (anotherCardNumber.equals(correctCardNumber)) {
+                return CheckResult.wrong("Your program generates two identical card numbers!");
+            }
+
+            program.execute("0");
+
+            return CheckResult.correct();
+        }
+
+        @DynamicTest
+        CheckResult test2_checkLogInAndLogOut() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+
+            if (!cardNumberMatcher.find()) {
+                return new CheckResult(false, "You are printing the card number " +
+                    "incorrectly. The card number should look like in the example: " +
+                    "400000DDDDDDDDDD, where D is a digit.");
+            }
+
+            Matcher pinMatcher = pinPattern.matcher(output);
+
+            if (!pinMatcher.find()) {
+                return new CheckResult(false, "You are printing the card PIN " +
+                    "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                    "a digit.");
+            }
+            String correctPin = pinMatcher.group().trim();
+            String correctCardNumber = cardNumberMatcher.group();
+
+            program.execute("2");
+            output = program.execute(correctCardNumber + "\n" + correctPin);
+
+            if (!output.toLowerCase().contains("successfully")) {
+                return new CheckResult(false, "The user should be signed in after " +
+                    "entering the correct card information.");
+            }
+
+            output = program.execute("2");
+
+            if (!output.toLowerCase().contains("create")) {
+                return new CheckResult(false, "The user should be logged out after choosing 'Log out' option.\n" +
+                    "And you should print the menu with 'Create an account' option.");
+            }
+
+            program.execute("0");
+
+            return CheckResult.correct();
+        }
+
+        @DynamicTest
+        CheckResult test3_checkLogInWithWrongPin() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+            Matcher pinMatcher = pinPattern.matcher(output);
+
+            if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                return new CheckResult(false, "You should output card number and PIN like in example!");
+            }
+
+            String correctCardNumber = cardNumberMatcher.group();
+            String correctPin = pinMatcher.group();
+
+            Random random = new Random();
+
+            String incorrectPin = correctPin;
+
+            while (correctPin.equals(incorrectPin)) {
+                incorrectPin = String.valueOf(1000 + random.nextInt(8999));
+            }
+
+            program.execute("2");
+            output = program.execute(correctCardNumber + "\n" + incorrectPin);
+
+            if (output.toLowerCase().contains("successfully")) {
+                return new CheckResult(false, "The user should not be signed in after" +
+                    " entering incorrect card information.");
+            }
+
+            program.execute("0");
+
+            return CheckResult.correct();
+        }
+
+        @DynamicTest
+        CheckResult test4_checkLogInToNotExistingAccount() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+            Matcher pinMatcher = pinPattern.matcher(output);
+
+            if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                return new CheckResult(false, "You should output card number " +
+                    "and PIN like in example");
+            }
+
+            String correctCardNumber = cardNumberMatcher.group();
+
+            Random random = new Random();
+
+            String correctPin = pinMatcher.group().trim();
+            String incorrectCardNumber = correctCardNumber;
+
+            while (correctCardNumber.equals(incorrectCardNumber)) {
+                incorrectCardNumber = "400000" + (1_000_000_00 + random.nextInt(8_000_000_00));
+            }
+
+            program.execute("2");
+            output = program.execute(incorrectCardNumber + "\n" + correctPin);
+
+            if (output.toLowerCase().contains("successfully")) {
+                return new CheckResult(false, "The user should not be signed" +
+                    " in after entering the information of a non-existing card.");
+            }
+
+            return CheckResult.correct();
+        }
+
+        @DynamicTest
+        CheckResult test5_checkBalance() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+            Matcher pinMatcher = pinPattern.matcher(output);
+
+            if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                return new CheckResult(false, "You should output card number and PIN like in example");
+            }
+
+            String correctPin = pinMatcher.group().trim();
+            String correctCardNumber = cardNumberMatcher.group();
+
+            program.execute("2");
+            program.execute(correctCardNumber + "\n" + correctPin);
+            output = program.execute("1");
+
+            if (!output.contains("0")) {
+                return new CheckResult(false, "Expected balance: 0");
+            }
+
+            program.execute("0");
+
+            return CheckResult.correct();
+        }
+
+        @DynamicTest
+        CheckResult test6_checkLuhnAlgorithm() {
+
+            TestedProgram program = new TestedProgram();
+            program.start();
+
+            String output = program.execute("1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1");
+
+            Matcher cardNumberMatcher = cardNumberPattern.matcher(output);
+
+            boolean isSomeCardFound = false;
+            int foundCards = 0;
+
+            while (cardNumberMatcher.find()) {
+
+                foundCards++;
+
+                if (!isSomeCardFound) {
+                    isSomeCardFound = true;
+                }
+
+                String cardNumber = cardNumberMatcher.group();
+
+                if (!checkLuhnAlgorithm(cardNumber)) {
+                    return new CheckResult(false, String.format("The card number %s doesn’t pass the Luhn algorithm.", cardNumber));
+                }
+            }
+
+            if (!isSomeCardFound) {
+                return new CheckResult(false, "You should output card number and PIN like in example");
+            }
+
+            if (foundCards != 20) {
+                return new CheckResult(false, "Tried to generate 20 cards, but found " + foundCards);
+            }
+
+            return CheckResult.correct();
+        }
+
+        private boolean checkLuhnAlgorithm(String cardNumber) {
+            int result = 0;
+            for (int i = 0; i < cardNumber.length(); i++) {
+                int digit = Character.getNumericValue(cardNumber.charAt(i));
+                if (i % 2 == 0) {
+                    int doubleDigit = digit * 2 > 9 ? digit * 2 - 9 : digit * 2;
+                    result += doubleDigit;
+                    continue;
+                }
+                result += digit;
+            }
+            return result % 10 == 0;
+        }
+    }
+  learner_created: false
+feedback_link: https://hyperskill.org/projects/93/stages/516/implement#comment
+status: Solved
+record: 1
